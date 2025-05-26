@@ -165,8 +165,9 @@
         </p>
         <p style="font-size: 16px; opacity: 0.9;">
             Combining Option A's comprehensive organizational capabilities with Option B's elegant immutability and geographic intelligence, 
-            plus innovative enhancements for industry leadership. Features 40+ tables across 9 business domains with multi-stakeholder 
-            support, immutable audit trails, and advanced geographic cost intelligence.
+            plus innovative enhancements for industry leadership. Features 80+ tables across 9 business domains with multi-stakeholder 
+            support, immutable audit trails, advanced geographic cost intelligence, and a revolutionary base property data system that 
+            tracks both current state ("what is") and planned renovations ("what will be").
         </p>
     </div>
 
@@ -180,8 +181,8 @@
             <p>Hierarchical geo_regions with LTREE, immutable datasets, and automatic regional fallback</p>
         </div>
         <div class="feature-card">
-            <h3>🏠 Comprehensive Property Management</h3>
-            <p>All detailed submission tables from Option A with enhanced JSONB flexibility</p>
+            <h3>🏠 Base Property Data System</h3>
+            <p>16 base tables capturing "what is" from external sources + 16 modification tables tracking "what will be"</p>
         </div>
         <div class="feature-card">
             <h3>🔒 Advanced Immutability Framework</h3>
@@ -213,8 +214,26 @@ erDiagram
     cost_datasets ||--o{ cost_prices : "dataset_id"
     cost_datasets ||--o{ regional_multipliers : "dataset_id"
     
-    %% Property Management
+    %% Property Management with Base Data
     properties ||--o{ property_submissions : "has submissions"
+    properties ||--|| property_base_roof : "has roof data"
+    properties ||--|| property_base_signage : "has signage data"
+    properties ||--|| property_base_irrigation : "has irrigation data"
+    properties ||--|| property_base_facade : "has facade data"
+    properties ||--|| property_base_trim : "has trim data"
+    properties ||--|| property_base_generator : "has generator data"
+    properties ||--|| property_base_shutters : "has shutters data"
+    properties ||--|| property_base_lighting : "has lighting data"
+    properties ||--|| property_base_landscape : "has landscape data"
+    properties ||--|| property_base_roads : "has roads data"
+    properties ||--|| property_base_garage : "has garage data"
+    properties ||--|| property_base_patio : "has patio data"
+    properties ||--|| property_base_unit_access : "has unit access data"
+    properties ||--|| property_base_elevators : "has elevators data"
+    properties ||--o{ property_base_amenities : "has amenities data"
+    properties ||--|| property_base_units : "has units data"
+    
+    %% Submission Data and Modifications
     property_submissions ||--|| submission_details : "has details"
     property_submissions ||--|| submission_exterior_details : "has exterior"
     property_submissions ||--o{ submission_exterior_materials : "has materials"
@@ -223,6 +242,24 @@ erDiagram
     property_submissions ||--|| submission_units : "has unit summary"
     submission_units ||--o{ submission_unit_configs : "has configurations"
     property_submissions ||--o{ submission_amenities : "has amenities"
+    
+    %% Submission Modifications - What Will Be
+    property_submissions ||--o{ submission_roof_modifications : "has roof mods"
+    property_submissions ||--o{ submission_signage_modifications : "has signage mods"
+    property_submissions ||--o{ submission_irrigation_modifications : "has irrigation mods"
+    property_submissions ||--o{ submission_facade_modifications : "has facade mods"
+    property_submissions ||--o{ submission_trim_modifications : "has trim mods"
+    property_submissions ||--o{ submission_generator_modifications : "has generator mods"
+    property_submissions ||--o{ submission_shutters_modifications : "has shutters mods"
+    property_submissions ||--o{ submission_lighting_modifications : "has lighting mods"
+    property_submissions ||--o{ submission_landscape_modifications : "has landscape mods"
+    property_submissions ||--o{ submission_roads_modifications : "has roads mods"
+    property_submissions ||--o{ submission_garage_modifications : "has garage mods"
+    property_submissions ||--o{ submission_patio_modifications : "has patio mods"
+    property_submissions ||--o{ submission_unit_access_modifications : "has access mods"
+    property_submissions ||--o{ submission_elevators_modifications : "has elevator mods"
+    property_submissions ||--o{ submission_amenities_modifications : "has amenity mods"
+    property_submissions ||--o{ submission_units_modifications : "has unit mods"
     
     %% Master Cost Data
     cost_categories ||--o{ cost_categories : "parent_id"
@@ -238,6 +275,8 @@ erDiagram
     cost_items ||--o{ cost_bundle_items : "included in"
     amenity_master ||--o{ amenity_conditions : "has conditions"
     amenity_master ||--o{ submission_amenities : "referenced by"
+    amenity_master ||--o{ property_base_amenities : "referenced by"
+    amenity_master ||--o{ submission_amenities_modifications : "referenced by"
     amenity_conditions ||--o{ submission_amenities : "referenced by"
     amenity_master ||--o{ amenity_cost_items : "has cost items"
     amenity_conditions ||--o{ amenity_cost_items : "uses"
@@ -319,6 +358,16 @@ erDiagram
         decimal lon
         uuid geo_region_id FK
         enum property_type
+        text parcel_number
+        text apn
+        int year_built
+        decimal total_sqft
+        decimal lot_size_sqft
+        text zoning
+        json external_data_sources
+        timestamp last_enriched_at
+        decimal data_confidence_score
+        boolean verified_by_owner
     }
     
     property_submissions {
@@ -332,6 +381,7 @@ erDiagram
         enum status
         text buyer_scenario_id
         uuid locked_dataset_id FK
+        json base_data_snapshot
         timestamp submitted_at
     }
     
@@ -386,17 +436,55 @@ erDiagram
         decimal subtotal
         json calculation_metadata
     }
+    
+    %% Base Property Data Tables
+    property_base_roof {
+        uuid id PK
+        uuid property_id FK
+        text roof_type
+        text roof_material
+        int roof_age_years
+        text roof_condition
+        decimal roof_sqft
+        text data_source
+        timestamp verified_date
+    }
+    
+    property_base_signage {
+        uuid id PK
+        uuid property_id FK
+        boolean has_signage
+        text signage_type
+        text signage_condition
+        decimal signage_sqft
+        boolean illuminated
+        text data_source
+    }
+    
+    property_base_amenities {
+        uuid id PK
+        uuid property_id FK
+        uuid amenity_master_id FK
+        boolean exists
+        text condition
+        decimal sqft
+        int installation_year
+        text data_source
+    }
         </div>
         <div class="description">
-            <strong>Complete Schema ERD:</strong> This comprehensive entity relationship diagram shows all 40+ tables and their relationships in the AMP Report Option C system. 
+            <strong>Complete Schema ERD:</strong> This comprehensive entity relationship diagram shows all 80+ tables and their relationships in the AMP Report Option C system. 
             Key architectural features include:
             <ul>
                 <li><strong>Hybrid Multi-Tenant Architecture:</strong> Users can work independently or as part of multiple organizations with role-based permissions plus multi-stakeholder support</li>
                 <li><strong>Geographic Intelligence:</strong> Hierarchical geo_regions with LTREE paths for efficient cost dataset resolution</li>
+                <li><strong>Base Property Data System:</strong> 16 base property tables capture "what is" from external data sources (ATTOM, Reonomy, etc.) with confidence scoring</li>
+                <li><strong>Modification Tracking:</strong> 16 parallel modification tables track "what will be" changes for accurate renovation cost estimation</li>
                 <li><strong>Immutable Cost Engine:</strong> Cost datasets and reports become immutable once locked, ensuring audit trail integrity</li>
                 <li><strong>Comprehensive Property Management:</strong> All detailed submission tables from Option A with enhanced JSONB flexibility</li>
                 <li><strong>Advanced Bundle System:</strong> Cost bundles with dynamic formulas and condition-based amenity pricing</li>
                 <li><strong>Flexible Report Generation:</strong> Multiple report types with immutable snapshots and complete calculation metadata</li>
+                <li><strong>External Data Integration:</strong> Properties enriched with data from ATTOM, Reonomy, HUD, county assessors with confidence scoring</li>
                 <li><strong>Performance Optimization:</strong> Pre-calculated totals, strategic denormalization, and comprehensive analytics</li>
             </ul>
         </div>
@@ -674,6 +762,153 @@ flowchart LR
     </div>
 
     <div class="diagram-container">
+        <h2>Base Property Data: "What Is" to "What Will Be" Flow</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('base-data-flow')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('base-data-flow')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('base-data-flow')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="base-data-flow">
+flowchart TD
+    %% Property Creation & Enrichment
+    A[Property Address Input] --> B[Geocoding & Normalization]
+    B --> C[External Data Sources]
+    
+    subgraph "External Data Integration"
+        C --> D[ATTOM Data<br/>📊 Property characteristics]
+        C --> E[Reonomy<br/>🏢 Commercial data]
+        C --> F[County Assessor<br/>📋 Tax records]
+        C --> G[HUD<br/>🏘️ Housing data]
+        C --> H[Street View<br/>🖼️ Visual analysis]
+    end
+    
+    %% Base Data Population
+    D --> I[Populate Base Tables]
+    E --> I
+    F --> I
+    G --> I
+    H --> I
+    
+    subgraph "16 Base Property Tables - What Is"
+        I --> J[property_base_roof<br/>🏠 Current roof condition]
+        I --> K[property_base_signage<br/>🪧 Existing signage]
+        I --> L[property_base_irrigation<br/>💧 Current irrigation]
+        I --> M[property_base_facade<br/>🏗️ Facade condition]
+        I --> N[property_base_trim<br/>🎨 Trim state]
+        I --> O[property_base_generator<br/>⚡ Power backup]
+        I --> P[property_base_shutters<br/>🌀 Storm protection]
+        I --> Q[property_base_lighting<br/>💡 Current lighting]
+        I --> R[property_base_landscape<br/>🌳 Landscaping state]
+        I --> S[property_base_roads<br/>🛣️ Roads/parking]
+        I --> T[property_base_garage<br/>🚗 Garage facilities]
+        I --> U[property_base_patio<br/>🪑 Outdoor spaces]
+        I --> V[property_base_unit_access<br/>🚪 Access systems]
+        I --> W[property_base_elevators<br/>🛗 Vertical transport]
+        I --> X[property_base_amenities<br/>🏊 Current amenities]
+        I --> Y[property_base_units<br/>🏢 Unit composition]
+    end
+    
+    %% Confidence Scoring
+    J --> Z[Data Confidence Score]
+    K --> Z
+    L --> Z
+    M --> Z
+    N --> Z
+    O --> Z
+    P --> Z
+    Q --> Z
+    R --> Z
+    S --> Z
+    T --> Z
+    U --> Z
+    V --> Z
+    W --> Z
+    X --> Z
+    Y --> Z
+    
+    Z --> AA[Owner Verification<br/>✅ Optional override]
+    
+    %% Submission Creation
+    AA --> AB[Create Property Submission]
+    AB --> AC[Snapshot Base Data<br/>📸 Point-in-time capture]
+    
+    %% Modification Tables
+    AC --> AD[User Reviews Current State]
+    AD --> AE[Define Modifications]
+    
+    subgraph "16 Modification Tables - What Will Be"
+        AE --> AF[submission_roof_modifications<br/>🔧 Roof changes]
+        AE --> AG[submission_signage_modifications<br/>✨ New signage]
+        AE --> AH[submission_irrigation_modifications<br/>💦 Irrigation upgrades]
+        AE --> AI[submission_facade_modifications<br/>🎭 Facade improvements]
+        AE --> AJ[submission_trim_modifications<br/>🖌️ Trim updates]
+        AE --> AK[submission_generator_modifications<br/>🔌 Power upgrades]
+        AE --> AL[submission_shutters_modifications<br/>🛡️ Shutter additions]
+        AE --> AM[submission_lighting_modifications<br/>✨ Lighting upgrades]
+        AE --> AN[submission_landscape_modifications<br/>🌿 Landscaping plans]
+        AE --> AO[submission_roads_modifications<br/>🛤️ Road improvements]
+        AE --> AP[submission_garage_modifications<br/>🏗️ Garage expansion]
+        AE --> AQ[submission_patio_modifications<br/>🏖️ Patio enhancements]
+        AE --> AR[submission_unit_access_modifications<br/>🔐 Access upgrades]
+        AE --> AS[submission_elevators_modifications<br/>⬆️ Elevator modernization]
+        AE --> AT[submission_amenities_modifications<br/>🎯 Amenity additions]
+        AE --> AU[submission_units_modifications<br/>🔨 Unit renovations]
+    end
+    
+    %% Cost Calculation
+    AF --> AV[Cost Calculation Engine]
+    AG --> AV
+    AH --> AV
+    AI --> AV
+    AJ --> AV
+    AK --> AV
+    AL --> AV
+    AM --> AV
+    AN --> AV
+    AO --> AV
+    AP --> AV
+    AQ --> AV
+    AR --> AV
+    AS --> AV
+    AT --> AV
+    AU --> AV
+    
+    AV --> AW[Generate Report<br/>📊 What Is → What Will Be<br/>💰 Total renovation cost]
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef external fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef base fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef confidence fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef submission fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef modification fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef output fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    
+    class A,B input
+    class C,D,E,F,G,H external
+    class I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y base
+    class Z,AA confidence
+    class AB,AC,AD,AE submission
+    class AF,AG,AH,AI,AJ,AK,AL,AM,AN,AO,AP,AQ,AR,AS,AT,AU modification
+    class AV,AW output
+        </div>
+        <div class="description">
+            <strong>Base Property Data System:</strong> Option C introduces a comprehensive "What Is" to "What Will Be" tracking system:
+            <ul>
+                <li><strong>External Data Integration:</strong> Properties automatically enriched with data from ATTOM, Reonomy, HUD, county assessors, and visual analysis</li>
+                <li><strong>16 Base Property Tables:</strong> Capture current state of every property aspect - roof, signage, irrigation, facade, trim, etc.</li>
+                <li><strong>Data Confidence Scoring:</strong> Each data point scored based on source reliability, recency, and cross-verification</li>
+                <li><strong>Owner Verification:</strong> Property owners can override external data with verified information</li>
+                <li><strong>Point-in-Time Snapshots:</strong> Base data captured at submission creation for historical accuracy</li>
+                <li><strong>16 Modification Tables:</strong> Track planned changes to each property aspect for accurate cost estimation</li>
+                <li><strong>Comprehensive Cost Analysis:</strong> Engine calculates renovation costs based on delta between current state and planned improvements</li>
+                <li><strong>Audit Trail:</strong> Complete history of data sources, modifications, and calculations preserved</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
         <h2>Immutability & Audit Trail Framework</h2>
         <div class="zoom-controls">
             <button class="zoom-btn" onclick="zoomIn('immutability')">+</button>
@@ -854,7 +1089,7 @@ flowchart TD
 
         // Wait for DOM to load, then render diagrams
         document.addEventListener('DOMContentLoaded', function() {
-            const diagrams = ['schema-erd', 'data-flow', 'multi-stakeholder', 'cost-engine', 'immutability'];
+            const diagrams = ['schema-erd', 'data-flow', 'multi-stakeholder', 'cost-engine', 'base-data-flow', 'immutability'];
             let renderCount = 0;
             
             diagrams.forEach(diagramId => {
