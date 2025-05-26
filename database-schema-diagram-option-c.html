@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMP Report Database Schema (Option C) - Hybrid Best of Both Worlds</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .diagram-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            min-height: 700px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .mermaid {
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #fafafa;
+            min-height: 600px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+        
+        .mermaid svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .description {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            padding: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .zoom-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .zoom-btn:hover {
+            background: #1976D2;
+        }
+        .zoom-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            color: #2196F3;
+            margin-top: 0;
+        }
+        .nav-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .nav-link.current {
+            background: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <h1 style="margin: 0; font-size: 1.8rem;">AMP Report Database Schema Options</h1>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Main Landing Page</a>
+            <a href="database-schema-diagram-option-a.html" class="nav-link">📊 Schema Option A</a>
+            <a href="database-schema-diagram-option-b.html" class="nav-link">🔒 Schema Option B</a>
+            <a href="database-schema-diagram-option-c.html" class="nav-link current">🏆 Schema Option C</a>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <h1>🏆 AMP Report Database Schema (Option C) - Hybrid Best of Both Worlds</h1>
+        <p style="font-size: 18px; margin-bottom: 10px;">
+            <strong>Ultimate synthesis of enterprise-grade features and technical excellence</strong>
+        </p>
+        <p style="font-size: 16px; opacity: 0.9;">
+            Combining Option A's comprehensive organizational capabilities with Option B's elegant immutability and geographic intelligence, 
+            plus innovative enhancements for industry leadership. Features 40+ tables across 9 business domains with multi-stakeholder 
+            support, immutable audit trails, and advanced geographic cost intelligence.
+        </p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>🏢 Ultimate Multi-Tenant Architecture</h3>
+            <p>Complete organizations + Row-Level Security with multi-stakeholder isolation and buyer scenarios</p>
+        </div>
+        <div class="feature-card">
+            <h3>🌍 Superior Geographic Intelligence</h3>
+            <p>Hierarchical geo_regions with LTREE, immutable datasets, and automatic regional fallback</p>
+        </div>
+        <div class="feature-card">
+            <h3>🏠 Comprehensive Property Management</h3>
+            <p>All detailed submission tables from Option A with enhanced JSONB flexibility</p>
+        </div>
+        <div class="feature-card">
+            <h3>🔒 Advanced Immutability Framework</h3>
+            <p>Locked datasets and reports with complete audit trails and version control</p>
+        </div>
+    </div>
+    
+    <div class="diagram-container">
+        <h2>Complete Schema Domain Architecture</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('domain-arch')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('domain-arch')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('domain-arch')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="domain-arch">
+flowchart TB
+    subgraph "Organization & User Domain"
+        ORG[organizations<br/>Multi-tenant support]
+        OM[organization_members<br/>Role-based access]
+        USR[users<br/>Individual + org support]
+        SS[submission_sharing<br/>Selective sharing]
+    end
+    
+    subgraph "Geographic & Pricing Domain"
+        GR[geo_regions<br/>Hierarchical LTREE]
+        CD[cost_datasets<br/>Immutable snapshots]
+        RM[regional_multipliers<br/>Market adjustments]
+    end
+    
+    subgraph "Cost Catalog Domain"
+        CC[cost_categories<br/>Hierarchical structure]
+        CSC[cost_subcategories<br/>Granular organization]
+        CI[cost_items<br/>Immutable once referenced]
+        CIS[cost_item_standards<br/>SF, time, crew standards]
+        CIA[cost_item_attributes<br/>Extensible JSONB traits]
+        CP[cost_prices<br/>Locked pricing by tier]
+        BT[budget_tiers<br/>5-tier system]
+    end
+    
+    subgraph "Bundle & Amenity Domain"
+        CB[cost_bundles<br/>Versioned assemblies]
+        CBI[cost_bundle_items<br/>Dynamic formulas]
+        AM[amenity_master<br/>Complete catalog]
+        AC[amenity_conditions<br/>Cost variations]
+        ACI[amenity_cost_items<br/>Condition linking]
+    end
+    
+    subgraph "Property Management Domain"
+        PROP[properties<br/>Global entities]
+        PS[property_submissions<br/>Multi-stakeholder]
+        SD[submission_details<br/>Comprehensive data]
+        SED[submission_exterior_details<br/>Exterior specifics]
+        SEM[submission_exterior_materials<br/>Material tracking]
+        SUA[submission_unit_access<br/>Access types]
+        SE[submission_elevators<br/>Elevator details]
+        SU[submission_units<br/>Unit summaries]
+        SUC[submission_unit_configs<br/>Unit configurations]
+        SA[submission_amenities<br/>Selected amenities]
+    end
+    
+    subgraph "Report Generation Domain"
+        REP[reports<br/>Immutable snapshots]
+        RT[report_types<br/>Configurable types]
+        RS[report_sections<br/>Modular components]
+        RLI[report_line_items<br/>Locked calculations]
+        RST[report_section_totals<br/>Pre-calculated]
+        RSUM[report_summary<br/>Top-level metrics]
+        RAB[report_area_breakdown<br/>Cost distribution]
+        RA[report_adjustments<br/>Manual overrides]
+    end
+    
+    subgraph "Calculation & Analysis Domain"
+        CT[calculation_templates<br/>Reusable formulas]
+        VAS[value_add_strategies<br/>ROI strategies]
+        CCR[cost_calculation_rules<br/>Business logic]
+        PT[project_timelines<br/>Scheduling templates]
+        MT[material_types<br/>Material specs]
+        WTS[work_type_standards<br/>Work standards]
+    end
+    
+    subgraph "File & Document Domain"
+        RD[report_documents<br/>Generated files]
+        SAT[submission_attachments<br/>User uploads]
+    end
+    
+    subgraph "Analytics & Performance Domain"
+        RANALYTICS[report_analytics<br/>Usage tracking]
+        CPERF[calculation_performance<br/>Performance monitoring]
+        CDI[cost_data_imports<br/>Import auditing]
+    end
+    
+    %% Cross-domain relationships
+    USR --> PS
+    ORG --> PS
+    GR --> PROP
+    GR --> CD
+    CD --> CP
+    PROP --> PS
+    PS --> REP
+    CI --> RLI
+    CP --> RLI
+    CT --> RLI
+    REP --> RD
+    REP --> RANALYTICS
+    
+    %% Styling
+    classDef userDomain fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef geoDomain fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef costDomain fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef bundleDomain fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef propertyDomain fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef reportDomain fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef calcDomain fill:#fff8e1,stroke:#fbc02d,stroke-width:2px
+    classDef fileDomain fill:#f9fbe7,stroke:#827717,stroke-width:2px
+    classDef analyticsDomain fill:#fafafa,stroke:#424242,stroke-width:2px
+    
+    class ORG,OM,USR,SS userDomain
+    class GR,CD,RM geoDomain
+    class CC,CSC,CI,CIS,CIA,CP,BT costDomain
+    class CB,CBI,AM,AC,ACI bundleDomain
+    class PROP,PS,SD,SED,SEM,SUA,SE,SU,SUC,SA propertyDomain
+    class REP,RT,RS,RLI,RST,RSUM,RAB,RA reportDomain
+    class CT,VAS,CCR,PT,MT,WTS calcDomain
+    class RD,SAT fileDomain
+    class RANALYTICS,CPERF,CDI analyticsDomain
+        </div>
+        <div class="description">
+            <strong>Complete Domain Architecture:</strong> Option C organizes 40+ tables across 9 business domains, combining the best of both Option A and Option B:
+            <ul>
+                <li><strong>Organization & User:</strong> Complete multi-tenant architecture with role-based access control</li>
+                <li><strong>Geographic & Pricing:</strong> Hierarchical regions with immutable cost datasets and regional multipliers</li>
+                <li><strong>Cost Catalog:</strong> Three-tier hierarchy with comprehensive standards and extensible attributes</li>
+                <li><strong>Bundle & Amenity:</strong> Advanced assembly system with dynamic formulas and condition-based pricing</li>
+                <li><strong>Property Management:</strong> All detailed submission tables from Option A with enhanced flexibility</li>
+                <li><strong>Report Generation:</strong> Immutable reports with multiple types and complete audit trails</li>
+                <li><strong>Calculation & Analysis:</strong> Reusable templates and business rules for complex calculations</li>
+                <li><strong>File & Document:</strong> Comprehensive document management with versioning</li>
+                <li><strong>Analytics & Performance:</strong> Advanced monitoring and usage tracking capabilities</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Multi-Stakeholder Access Control & Geographic Intelligence</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('multi-stakeholder')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('multi-stakeholder')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('multi-stakeholder')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="multi-stakeholder">
+flowchart TD
+    %% Property & Geographic Context
+    A[Property Address] --> B[Geographic Resolution]
+    B --> C[geo_regions Hierarchy<br/>ZIP → County → State → National]
+    C --> D[Find Most Specific cost_dataset]
+    
+    %% Multi-Stakeholder Scenarios
+    D --> E[Property Submission Created]
+    E --> F[Multiple Buyer Scenarios]
+    
+    F --> G[Buyer A Scenario<br/>buyer_user_id: A]
+    F --> H[Buyer B Scenario<br/>buyer_user_id: B]
+    F --> I[Buyer C Scenario<br/>buyer_user_id: C]
+    
+    %% Row-Level Security
+    G --> J[RLS Isolation<br/>Only Buyer A sees their data]
+    H --> K[RLS Isolation<br/>Only Buyer B sees their data]
+    I --> L[RLS Isolation<br/>Only Buyer C sees their data]
+    
+    %% Shared Property Data
+    M[Shared Property Data<br/>submission_details<br/>submission_amenities<br/>submission_units] --> G
+    M --> H
+    M --> I
+    
+    %% Individual Cost Assumptions
+    J --> N[Buyer A Report<br/>locked_dataset_id: X<br/>budget_tier: HIGH]
+    K --> O[Buyer B Report<br/>locked_dataset_id: Y<br/>budget_tier: MEDIUM]
+    L --> P[Buyer C Report<br/>locked_dataset_id: Z<br/>budget_tier: LOW]
+    
+    %% Comparable Analysis
+    N --> Q[Comparative Analysis<br/>Same property, different assumptions<br/>Isolated yet comparable]
+    O --> Q
+    P --> Q
+    
+    %% Organization Sharing
+    Q --> R[Organization Sharing<br/>submission_sharing table<br/>Access levels: view/edit/admin]
+    
+    %% Styling
+    classDef property fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef geo fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef stakeholder fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef security fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef analysis fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    
+    class A,B,E property
+    class C,D geo
+    class F,G,H,I,M stakeholder
+    class J,K,L,N,O,P security
+    class Q,R analysis
+        </div>
+        <div class="description">
+            <strong>Multi-Stakeholder Innovation:</strong> Option C introduces industry-first multi-stakeholder support:
+            <ul>
+                <li><strong>Geographic Intelligence:</strong> Automatic resolution from property address to most specific cost dataset</li>
+                <li><strong>Buyer Scenarios:</strong> Multiple buyers can analyze the same property with different cost assumptions</li>
+                <li><strong>Row-Level Security:</strong> Complete data isolation ensures each buyer only sees their own analysis</li>
+                <li><strong>Shared Foundation:</strong> Property details and amenities shared, but cost calculations isolated</li>
+                <li><strong>Comparable Analysis:</strong> Teams can compare different buyer perspectives on the same deal</li>
+                <li><strong>Organization Sharing:</strong> Flexible sharing with access level controls and expiration</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Immutability & Audit Trail Framework</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('immutability')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('immutability')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('immutability')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="immutability">
+flowchart TD
+    %% Data Creation Phase
+    A[Cost Data Import] --> B[Create cost_dataset<br/>version: 1, is_active: true]
+    B --> C[Populate cost_prices<br/>Pricing by item + tier]
+    C --> D[Lock Dataset<br/>locked_at: timestamp]
+    
+    %% Submission Phase
+    E[Property Submission] --> F[Lock Dataset Reference<br/>locked_dataset_id]
+    F --> G[Create Submission Details<br/>All property characteristics]
+    G --> H[Version Control<br/>submission version tracking]
+    
+    %% Report Generation Phase
+    H --> I[Generate Report<br/>Multiple report types]
+    I --> J[Create Line Items<br/>unit_cost from locked dataset]
+    J --> K[Calculate Totals<br/>Pre-computed for performance]
+    K --> L[Lock Report<br/>locked_at: timestamp]
+    
+    %% Immutability Enforcement
+    D --> M[Dataset IMMUTABLE<br/>❌ No updates allowed]
+    L --> N[Report IMMUTABLE<br/>❌ No modifications allowed]
+    
+    %% Audit Trail
+    M --> O[Complete Audit Trail<br/>✅ Who, what, when, why]
+    N --> O
+    O --> P[Regulatory Compliance<br/>✅ Financial audit ready]
+    
+    %% Version Management
+    P --> Q[Version Tracking<br/>✅ Historical preservation]
+    Q --> R{Need Changes?}
+    R -->|Yes| S[Create New Version<br/>Increment version number]
+    R -->|No| T[Maintain Current<br/>Continue operations]
+    
+    S --> B
+    T --> U[Operational Excellence<br/>✅ Consistent, reliable data]
+    
+    %% Change Scenarios
+    V[Market Conditions Change] --> W[Create regional_multipliers<br/>Quick adjustments]
+    W --> X[No dataset recreation needed<br/>Rapid market response]
+    
+    Y[Cost Item Updates] --> Z[Create new cost_item version<br/>Preserve existing references]
+    Z --> AA[Old reports unaffected<br/>New reports use new version]
+    
+    %% Styling
+    classDef creation fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef submission fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef report fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef immutable fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    classDef audit fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef version fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef change fill:#fff8e1,stroke:#fbc02d,stroke-width:2px
+    
+    class A,B,C,D creation
+    class E,F,G,H submission
+    class I,J,K,L report
+    class M,N immutable
+    class O,P,Q audit
+    class R,S,T,U version
+    class V,W,X,Y,Z,AA change
+        </div>
+        <div class="description">
+            <strong>Comprehensive Immutability Framework:</strong> Option C provides industry-leading audit trail capabilities:
+            <ul>
+                <li><strong>Dataset Immutability:</strong> Cost datasets locked after creation, ensuring pricing consistency</li>
+                <li><strong>Report Immutability:</strong> Reports locked after generation, preserving point-in-time calculations</li>
+                <li><strong>Complete Audit Trail:</strong> Every change tracked with user, timestamp, and reason</li>
+                <li><strong>Version Control:</strong> Comprehensive versioning across all major entities</li>
+                <li><strong>Regulatory Compliance:</strong> Audit trails meet financial and regulatory requirements</li>
+                <li><strong>Change Management:</strong> New versions created for changes, old data preserved</li>
+                <li><strong>Market Responsiveness:</strong> Regional multipliers enable quick adjustments without dataset recreation</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Advanced Cost Calculation Engine</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('cost-engine')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('cost-engine')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('cost-engine')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="cost-engine">
+flowchart LR
+    %% Input Sources
+    subgraph "Input Data Sources"
+        A[Property Submission<br/>📍 Geographic location<br/>🏠 Property characteristics]
+        B[Amenity Selections<br/>🏊 Pool: New Build<br/>🎾 Tennis Court: Renovate]
+        C[Unit Configurations<br/>🏢 50 units: 2BR/2BA<br/>🔧 Full renovation needed]
+        D[Exterior Details<br/>🏗️ Stucco facade<br/>🎨 Repaint needed]
+    end
+    
+    %% Geographic Resolution
+    A --> E[Geographic Engine<br/>🌍 geo_regions hierarchy<br/>📊 Find specific dataset]
+    E --> F[Locked Dataset<br/>🔒 Immutable pricing<br/>📅 Point-in-time snapshot]
+    
+    %% Cost Standards Application
+    B --> G[Amenity Cost Engine<br/>📋 amenity_master lookup<br/>⚙️ Condition-based pricing]
+    C --> H[Unit Cost Engine<br/>🏠 Unit type standards<br/>📏 SF-based calculations]
+    D --> I[Exterior Cost Engine<br/>🎨 Material-based pricing<br/>📐 Area calculations]
+    
+    %% Bundle Processing
+    G --> J[Bundle Expansion<br/>📦 cost_bundles<br/>🧮 Dynamic formulas]
+    H --> J
+    I --> J
+    
+    %% Standards & Multipliers
+    F --> K[Apply Standards<br/>📊 cost_item_standards<br/>⏱️ Time, SF, crew data]
+    J --> K
+    K --> L[Regional Multipliers<br/>🌎 Labor adjustments<br/>💰 Material variations]
+    
+    %% Budget Tier Selection
+    L --> M[Budget Tier Engine<br/>💎 HIGH: Premium brands<br/>💰 MEDIUM: Standard quality<br/>🔧 LOW: Value engineering]
+    
+    %% Final Calculations
+    M --> N[Line Item Generation<br/>📝 Detailed calculations<br/>🔍 Complete metadata]
+    N --> O[Section Totals<br/>📊 Pre-calculated sums<br/>⚡ Performance optimized]
+    O --> P[Project Summary<br/>💰 Total project cost<br/>📈 ROI metrics<br/>📅 Timeline estimates]
+    
+    %% Immutable Output
+    P --> Q[Lock Report<br/>🔒 Immutable snapshot<br/>📋 Audit trail complete]
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef geo fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef engine fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef processing fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef calculation fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef output fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    
+    class A,B,C,D input
+    class E,F geo
+    class G,H,I,J engine
+    class K,L,M processing
+    class N,O,P calculation
+    class Q output
+        </div>
+        <div class="description">
+            <strong>Advanced Cost Calculation Engine:</strong> Option C provides the most sophisticated cost calculation system:
+            <ul>
+                <li><strong>Multi-Source Input:</strong> Property, amenity, unit, and exterior data all contribute to calculations</li>
+                <li><strong>Geographic Intelligence:</strong> Automatic dataset resolution based on property location</li>
+                <li><strong>Condition-Based Pricing:</strong> Amenities priced differently based on their current condition</li>
+                <li><strong>Bundle System:</strong> Complex assemblies with dynamic quantity formulas</li>
+                <li><strong>Standards Application:</strong> SF, time, and crew standards ensure accurate estimates</li>
+                <li><strong>Regional Adjustments:</strong> Labor and material multipliers for local market conditions</li>
+                <li><strong>Budget Tier Flexibility:</strong> Five budget levels from value engineering to luxury</li>
+                <li><strong>Performance Optimization:</strong> Pre-calculated totals for sub-3-second report generation</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Store zoom instances
+        const zoomInstances = {};
+        
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false, 
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#2196F3',
+                primaryTextColor: '#000',
+                primaryBorderColor: '#1976D2',
+                lineColor: '#757575',
+                secondaryColor: '#FFC107',
+                tertiaryColor: '#4CAF50'
+            }
+        });
+
+        // Function to initialize zoom for a diagram
+        function initializeZoom(diagramId) {
+            const element = document.getElementById(diagramId);
+            const svg = element.querySelector('svg');
+            
+            if (svg && !zoomInstances[diagramId]) {
+                zoomInstances[diagramId] = svgPanZoom(svg, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: false,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    zoomScaleSensitivity: 0.2,
+                    dblClickZoomEnabled: true,
+                    mouseWheelZoomEnabled: true,
+                    preventMouseEventsDefault: true,
+                    contain: false,
+                    viewportSelector: '.svg-pan-zoom-viewport',
+                    beforeZoom: function(oldZoom, newZoom) {
+                        updateZoomInfo(diagramId, newZoom);
+                        return true;
+                    }
+                });
+                
+                // Force proper initial view
+                setTimeout(() => {
+                    if (zoomInstances[diagramId]) {
+                        zoomInstances[diagramId].resize();
+                        zoomInstances[diagramId].fit();
+                        zoomInstances[diagramId].center();
+                    }
+                }, 50);
+            }
+        }
+
+        // Update zoom level display
+        function updateZoomInfo(diagramId, zoomLevel) {
+            const container = document.getElementById(diagramId).closest('.diagram-container');
+            const zoomInfo = container.querySelector('.zoom-info');
+            if (zoomInfo) {
+                zoomInfo.textContent = `Use mouse wheel to zoom, drag to pan | Zoom: ${Math.round(zoomLevel * 100)}%`;
+            }
+        }
+
+        // Zoom control functions
+        function zoomIn(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].zoomIn();
+            }
+        }
+
+        function zoomOut(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].zoomOut();
+            }
+        }
+
+        function resetZoom(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].resetZoom();
+                zoomInstances[diagramId].center();
+                zoomInstances[diagramId].fit();
+            }
+        }
+
+        // Resize handler to maintain proper fit
+        function handleResize() {
+            Object.keys(zoomInstances).forEach(diagramId => {
+                if (zoomInstances[diagramId]) {
+                    setTimeout(() => {
+                        zoomInstances[diagramId].resize();
+                        zoomInstances[diagramId].fit();
+                        zoomInstances[diagramId].center();
+                    }, 100);
+                }
+            });
+        }
+
+        // Wait for DOM to load, then render diagrams
+        document.addEventListener('DOMContentLoaded', function() {
+            const diagrams = ['domain-arch', 'multi-stakeholder', 'immutability', 'cost-engine'];
+            let renderCount = 0;
+            
+            diagrams.forEach(diagramId => {
+                const element = document.getElementById(diagramId);
+                const diagramDefinition = element.textContent.trim();
+                
+                mermaid.render(`${diagramId}-svg`, diagramDefinition).then(function(result) {
+                    // Create a wrapper div for proper sizing
+                    const wrapper = document.createElement('div');
+                    wrapper.style.width = '100%';
+                    wrapper.style.height = '100%';
+                    wrapper.style.position = 'relative';
+                    wrapper.innerHTML = result.svg;
+                    
+                    element.innerHTML = '';
+                    element.appendChild(wrapper);
+                    
+                    // Ensure the SVG fills the container properly
+                    const svg = wrapper.querySelector('svg');
+                    if (svg) {
+                        // Get the original viewBox or create one
+                        let viewBox = svg.getAttribute('viewBox');
+                        if (!viewBox) {
+                            const bbox = svg.getBBox();
+                            viewBox = `0 0 ${bbox.width || 1000} ${bbox.height || 800}`;
+                            svg.setAttribute('viewBox', viewBox);
+                        }
+                        
+                        // Set SVG to fill container
+                        svg.setAttribute('width', '100%');
+                        svg.setAttribute('height', '100%');
+                        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                        svg.style.width = '100%';
+                        svg.style.height = '100%';
+                        svg.style.position = 'absolute';
+                        svg.style.top = '0';
+                        svg.style.left = '0';
+                    }
+                    
+                    // Initialize zoom after a short delay to ensure SVG is fully rendered
+                    setTimeout(() => {
+                        initializeZoom(diagramId);
+                        renderCount++;
+                        
+                        // Update zoom info for all diagrams once all are rendered
+                        if (renderCount === diagrams.length) {
+                            diagrams.forEach(id => updateZoomInfo(id, 1));
+                        }
+                    }, 300);
+                }).catch(function(error) {
+                    console.error(`Error rendering diagram ${diagramId}:`, error);
+                    element.innerHTML = `<p style="color: red;">Error rendering diagram: ${error.message}</p>`;
+                });
+            });
+            
+            // Add resize event listener
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html> 

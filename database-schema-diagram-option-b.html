@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMP Report Database Schema (Option B) - Complete Visualizations</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .diagram-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            min-height: 700px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .mermaid {
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #fafafa;
+            min-height: 600px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+        
+        .mermaid svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .description {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            padding: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .zoom-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .zoom-btn:hover {
+            background: #1976D2;
+        }
+        .zoom-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        .nav-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .nav-link.current {
+            background: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <h1 style="margin: 0; font-size: 1.8rem;">AMP Report Database Schema Options</h1>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Main Landing Page</a>
+            <a href="database-schema-diagram-option-a.html" class="nav-link">📊 Schema Option A</a>
+            <a href="database-schema-diagram-option-b.html" class="nav-link current">🔒 Schema Option B</a>
+            <a href="database-schema-diagram-option-c.html" class="nav-link">🏆 Schema Option C</a>
+        </div>
+    </div>
+    
+    <h1>AMP Report Database Schema (Option B) - Complete Visualizations</h1>
+    <p style="color: #666; font-size: 16px; margin-bottom: 30px;">
+        Comprehensive visual representation of the immutable, geo-intelligent database schema with 15+ tables across 5 business domains.
+        Features immutable pricing snapshots, hierarchical geographic regions, and multi-stakeholder isolation.
+    </p>
+    
+    <div class="diagram-container">
+        <h2>Complete Schema Entity Relationship Diagram</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('schema-erd')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('schema-erd')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('schema-erd')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="schema-erd">
+erDiagram
+    %% Catalog Layer
+    cost_categories {
+        uuid id PK
+        string name
+        uuid parent_id FK
+        ltree path
+    }
+    
+    cost_items {
+        uuid id PK
+        string code UK
+        string description
+        string uom
+        decimal default_crew_hours
+        uuid category_id FK
+    }
+    
+    cost_item_attributes {
+        uuid item_id FK
+        string attr_key
+        jsonb attr_val
+    }
+    
+    %% Geography & Pricing Layer
+    geo_regions {
+        uuid id PK
+        enum region_type
+        string code
+        uuid parent_id FK
+        int depth
+    }
+    
+    cost_datasets {
+        uuid id PK
+        uuid geo_region_id FK
+        string label
+        date effective_date
+        char currency
+        int version
+        boolean is_active
+    }
+    
+    cost_prices {
+        uuid item_id FK
+        uuid dataset_id FK
+        string cost_type
+        string budget_tier
+        string labor_variant
+        decimal unit_cost
+    }
+    
+    labor_rates {
+        uuid dataset_id FK
+        string trade
+        boolean union_flag
+        decimal hourly_rate
+    }
+    
+    cost_modifiers {
+        uuid dataset_id FK
+        string cost_type
+        string labor_variant
+        decimal multiplier
+    }
+    
+    %% Bundle Layer
+    cost_bundles {
+        uuid id PK
+        string code
+        string name
+        int version
+        string description
+        boolean is_active
+    }
+    
+    cost_bundle_items {
+        uuid bundle_id FK
+        uuid item_id FK
+        int version
+        decimal default_qty
+        boolean included_by_default
+    }
+    
+    %% Property Layer
+    properties {
+        uuid id PK
+        string address_fields
+        string apn
+        decimal lat
+        decimal lon
+        uuid geo_region_id FK
+        timestamp last_ext_refresh
+    }
+    
+    external_property_data {
+        uuid id PK
+        uuid property_id FK
+        string source
+        jsonb payload_raw
+        timestamp fetched_at
+    }
+    
+    property_intake {
+        uuid id PK
+        uuid property_id FK
+        string seller_user_id
+        jsonb form_fields
+        jsonb file_refs
+        timestamp timestamps
+    }
+    
+    %% Estimate Layer
+    feasibility_reports {
+        uuid id PK
+        uuid intake_id FK
+        string buyer_user_id
+        uuid dataset_id FK
+        enum status
+        decimal contingency_pct
+        string pdf_url
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    feasibility_report_lines {
+        uuid report_id FK
+        int line_no
+        uuid item_id FK
+        string cost_type
+        string budget_tier
+        string labor_variant
+        decimal quantity
+        decimal unit_cost
+        decimal total_cost
+        boolean included
+        uuid source_bundle_id FK
+        boolean locked
+    }
+    
+    %% Relationships
+    cost_categories ||--o{ cost_categories : "parent_id"
+    cost_categories ||--o{ cost_items : "category_id"
+    cost_items ||--o{ cost_item_attributes : "item_id"
+    
+    geo_regions ||--o{ geo_regions : "parent_id"
+    geo_regions ||--o{ cost_datasets : "geo_region_id"
+    geo_regions ||--o{ properties : "geo_region_id"
+    
+    cost_datasets ||--o{ cost_prices : "dataset_id"
+    cost_datasets ||--o{ labor_rates : "dataset_id"
+    cost_datasets ||--o{ cost_modifiers : "dataset_id"
+    cost_datasets ||--o{ feasibility_reports : "dataset_id"
+    
+    cost_items ||--o{ cost_prices : "item_id"
+    cost_items ||--o{ cost_bundle_items : "item_id"
+    cost_items ||--o{ feasibility_report_lines : "item_id"
+    
+    cost_bundles ||--o{ cost_bundle_items : "bundle_id"
+    cost_bundles ||--o{ feasibility_report_lines : "source_bundle_id"
+    
+    properties ||--o{ external_property_data : "property_id"
+    properties ||--o{ property_intake : "property_id"
+    
+    property_intake ||--o{ feasibility_reports : "intake_id"
+    
+    feasibility_reports ||--o{ feasibility_report_lines : "report_id"
+        </div>
+        <div class="description">
+            <strong>Complete Schema ERD (Option B):</strong> This entity relationship diagram shows the immutable, geo-intelligent database design with 15+ core tables. 
+            Key architectural features include:
+            <ul>
+                <li><strong>Immutable Facts:</strong> Catalog rows describe things; Dataset rows describe prices; once referenced, neither changes in place</li>
+                <li><strong>Hierarchical Geography:</strong> Self-referencing geo_regions table (ZIP→County→State→National) avoids hard-coding mappings</li>
+                <li><strong>Multi-Stakeholder Isolation:</strong> buyer_user_id with RLS ensures estimates are isolated yet comparable</li>
+                <li><strong>Temporal Pricing:</strong> cost_datasets with effective_date enable immutable pricing snapshots</li>
+                <li><strong>Extensible Design:</strong> JSONB attributes allow schema extension without migrations</li>
+                <li><strong>Bundle System:</strong> Predefined assemblies with versioning for consistent estimates</li>
+                <li><strong>Audit Trail:</strong> Denormalized unit_cost in report lines for permanent pricing history</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Data Flow Architecture</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('data-flow')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('data-flow')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('data-flow')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="data-flow">
+flowchart TD
+    %% Data Sources
+    A[CSV Import] --> B[cost_items]
+    A --> C[cost_prices]
+    D[JSON Import] --> E[cost_bundles]
+    F[Property Data] --> G[properties]
+    H[External APIs] --> I[external_property_data]
+    
+    %% Core Processing
+    B --> J[Catalog Layer]
+    C --> K[Price Sheet Layer]
+    E --> L[Bundle Layer]
+    G --> M[Asset Hub]
+    
+    %% Regional Processing
+    N[geo_regions] --> O[Dataset Lookup]
+    K --> O
+    O --> P[cost_datasets]
+    
+    %% Estimate Generation
+    M --> Q[property_intake]
+    Q --> R[feasibility_reports]
+    J --> S[Bundle Expansion]
+    L --> S
+    P --> S
+    S --> T[feasibility_report_lines]
+    
+    %% Output
+    R --> U[PDF Reports]
+    T --> U
+    R --> V[Analytics]
+    T --> V
+    
+    %% Styling
+    classDef input fill:#e1f5fe
+    classDef processing fill:#f3e5f5
+    classDef output fill:#e8f5e8
+    
+    class A,D,F,H input
+    class J,K,L,M,O,S processing
+    class U,V output
+        </div>
+        <div class="description">
+            <strong>Data Flow Architecture:</strong> This diagram shows how data flows through the immutable system layers:
+            <ol>
+                <li><strong>Data Sources:</strong> CSV imports for cost data, JSON for bundles, APIs for property data</li>
+                <li><strong>Core Processing:</strong> Data organized into domain layers (Catalog, Price Sheet, Bundle, Asset Hub)</li>
+                <li><strong>Regional Processing:</strong> Geographic hierarchy enables efficient dataset lookup</li>
+                <li><strong>Estimate Generation:</strong> Bundle expansion with locked pricing creates immutable report lines</li>
+                <li><strong>Output:</strong> PDF reports and analytics from frozen pricing snapshots</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Domain Layer Architecture</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('domain-arch')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('domain-arch')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('domain-arch')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="domain-arch">
+graph TB
+    subgraph "Catalog Domain"
+        CI[cost_items]
+        CC[cost_categories]
+        CIA[cost_item_attributes]
+    end
+    
+    subgraph "Price Sheet Domain"
+        GR[geo_regions]
+        CD[cost_datasets]
+        CP[cost_prices]
+        LR[labor_rates]
+        CM[cost_modifiers]
+    end
+    
+    subgraph "Bundle Domain"
+        CB[cost_bundles]
+        CBI[cost_bundle_items]
+    end
+    
+    subgraph "Asset Domain"
+        P[properties]
+        EPD[external_property_data]
+        PI[property_intake]
+    end
+    
+    subgraph "Estimate Domain"
+        FR[feasibility_reports]
+        FRL[feasibility_report_lines]
+    end
+    
+    subgraph "Future: Schedule Domain"
+        PT[project_timelines]
+        DS[draw_schedules]
+    end
+    
+    %% Cross-domain relationships
+    CI --> CP
+    CI --> CBI
+    CI --> FRL
+    CB --> CBI
+    CB --> FRL
+    CD --> CP
+    CD --> FR
+    GR --> CD
+    GR --> P
+    P --> PI
+    PI --> FR
+    FR --> FRL
+    
+    %% Styling
+    classDef catalog fill:#ffeb3b
+    classDef pricing fill:#2196f3
+    classDef bundle fill:#4caf50
+    classDef asset fill:#ff9800
+    classDef estimate fill:#9c27b0
+    classDef future fill:#607d8b
+    
+    class CI,CC,CIA catalog
+    class GR,CD,CP,LR,CM pricing
+    class CB,CBI bundle
+    class P,EPD,PI asset
+    class FR,FRL estimate
+    class PT,DS future
+        </div>
+        <div class="description">
+            <strong>Domain Layer Architecture:</strong> This diagram shows the logical organization of tables across 6 business domains:
+            <ul>
+                <li><strong>Catalog Domain:</strong> What can be bought or built? (cost_items, categories, attributes)</li>
+                <li><strong>Price Sheet Domain:</strong> Where & when is it priced? (geo_regions, datasets, prices)</li>
+                <li><strong>Bundle Domain:</strong> Which items appear together? (cost_bundles, bundle_items)</li>
+                <li><strong>Asset Domain:</strong> Where will the work happen? (properties, external data, intake)</li>
+                <li><strong>Estimate Domain:</strong> Who is committing to what, at which price? (reports, lines)</li>
+                <li><strong>Future Schedule Domain:</strong> When will cash leave the door? (timelines, draws)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Multi-Stakeholder Isolation Flow</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('stakeholder-flow')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('stakeholder-flow')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('stakeholder-flow')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="stakeholder-flow">
+flowchart TD
+    %% Property Setup
+    A[Property Listed] --> B[property_intake Created]
+    B --> C[Seller Requirements Captured]
+    
+    %% Multiple Buyers
+    C --> D1[Buyer A Analysis]
+    C --> D2[Buyer B Analysis]
+    C --> D3[Buyer C Analysis]
+    
+    %% Dataset Lookup
+    D1 --> E1[Dataset Lookup: Dallas 2025-Q2]
+    D2 --> E2[Dataset Lookup: Dallas 2025-Q2]
+    D3 --> E3[Dataset Lookup: Dallas 2025-Q2]
+    
+    %% Isolated Reports
+    E1 --> F1[feasibility_reports<br/>buyer_user_id: A<br/>contingency: 15%]
+    E2 --> F2[feasibility_reports<br/>buyer_user_id: B<br/>contingency: 20%]
+    E3 --> F3[feasibility_reports<br/>buyer_user_id: C<br/>contingency: 25%]
+    
+    %% Line Items with Locked Pricing
+    F1 --> G1[report_lines<br/>unit_cost: $50/sqft<br/>locked: true]
+    F2 --> G2[report_lines<br/>unit_cost: $50/sqft<br/>locked: true]
+    F3 --> G3[report_lines<br/>unit_cost: $50/sqft<br/>locked: true]
+    
+    %% Different Totals
+    G1 --> H1[Total: $1.15M<br/>15% contingency]
+    G2 --> H2[Total: $1.20M<br/>20% contingency]
+    G3 --> H3[Total: $1.25M<br/>25% contingency]
+    
+    %% RLS Enforcement
+    H1 --> I[Row-Level Security<br/>Each buyer sees only their analysis]
+    H2 --> I
+    H3 --> I
+    
+    %% Styling
+    classDef property fill:#e3f2fd
+    classDef buyer fill:#f3e5f5
+    classDef dataset fill:#fff3e0
+    classDef report fill:#e8f5e8
+    classDef security fill:#ffebee
+    
+    class A,B,C property
+    class D1,D2,D3 buyer
+    class E1,E2,E3 dataset
+    class F1,F2,F3,G1,G2,G3,H1,H2,H3 report
+    class I security
+        </div>
+        <div class="description">
+            <strong>Multi-Stakeholder Isolation:</strong> This diagram shows how multiple buyers can analyze the same property with complete isolation:
+            <ul>
+                <li>One property intake can generate multiple feasibility reports</li>
+                <li>Each buyer references the same immutable cost dataset</li>
+                <li>Different contingency percentages and assumptions create different totals</li>
+                <li>Row-Level Security on buyer_user_id ensures complete privacy</li>
+                <li>Locked unit costs provide audit trail and prevent manipulation</li>
+                <li>Estimates remain comparable since they use the same base pricing</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Geographic Pricing Intelligence</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('geo-pricing')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('geo-pricing')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('geo-pricing')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="geo-pricing">
+flowchart TB
+    %% Geographic Hierarchy
+    A[National Dataset<br/>Base Pricing] --> B[Texas State Dataset<br/>+5% Labor Adjustment]
+    B --> C[Dallas County Dataset<br/>+15% Material Premium]
+    C --> D[ZIP 75201 Dataset<br/>+25% Urban Premium]
+    
+    %% Property Location
+    E[Property: 123 Main St<br/>Dallas, TX 75201] --> F[Geo Lookup Algorithm]
+    
+    %% Dataset Selection
+    F --> G{Most Specific<br/>Active Dataset?}
+    G -->|Found ZIP| D
+    G -->|No ZIP Data| C
+    G -->|No County Data| B
+    G -->|Fallback| A
+    
+    %% Cost Calculation
+    D --> H[cost_prices Lookup<br/>Drywall: $2.50/sqft<br/>Paint: $1.75/sqft<br/>Flooring: $8.00/sqft]
+    
+    %% Bundle Expansion
+    H --> I[Bundle: Kitchen Renovation<br/>- Drywall: 200 sqft × $2.50<br/>- Paint: 200 sqft × $1.75<br/>- Flooring: 150 sqft × $8.00]
+    
+    %% Final Calculation
+    I --> J[Line Items with Locked Pricing<br/>Drywall: $500<br/>Paint: $350<br/>Flooring: $1,200<br/>Total: $2,050]
+    
+    %% Immutable Snapshot
+    J --> K[feasibility_report_lines<br/>unit_cost denormalized<br/>dataset_id: ZIP_75201_2025Q2<br/>locked: true]
+    
+    %% Styling
+    classDef national fill:#e3f2fd
+    classDef state fill:#f3e5f5
+    classDef county fill:#fff3e0
+    classDef zip fill:#e8f5e8
+    classDef property fill:#ffebee
+    classDef calculation fill:#f1f8e9
+    
+    class A national
+    class B state
+    class C county
+    class D zip
+    class E,F,G property
+    class H,I,J,K calculation
+        </div>
+        <div class="description">
+            <strong>Geographic Pricing Intelligence:</strong> This diagram illustrates the hierarchical geographic pricing system:
+            <ul>
+                <li><strong>Hierarchical Regions:</strong> National → State → County → ZIP code pricing datasets</li>
+                <li><strong>Most-Specific Lookup:</strong> Algorithm finds the most granular active dataset for the property location</li>
+                <li><strong>Regional Adjustments:</strong> Each level can apply labor, material, or market premiums</li>
+                <li><strong>Immutable Snapshots:</strong> Once a dataset is referenced, pricing is locked for audit trail</li>
+                <li><strong>Fallback Logic:</strong> If specific regional data isn't available, system falls back to broader regions</li>
+                <li><strong>Temporal Versioning:</strong> Multiple datasets per region enable pricing evolution over time</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Estimate Generation Lifecycle</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('estimate-lifecycle')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('estimate-lifecycle')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('estimate-lifecycle')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="estimate-lifecycle">
+sequenceDiagram
+    participant Admin as System Admin
+    participant User as Buyer User
+    participant System as AMP System
+    participant DB as Database
+    
+    %% Initial Setup
+    Admin->>DB: 1. Seed cost_items & cost_prices (NATIONAL)
+    Admin->>DB: 2. Regionalize pricing (Dallas 2025-Q2)
+    Admin->>DB: 3. Author cost_bundles
+    
+    %% Property Setup
+    User->>System: Submit property for analysis
+    System->>DB: findOrCreate(properties)
+    System->>DB: Store property_intake
+    
+    %% Dataset Lookup
+    System->>DB: lookupDataset() via geo_regions CTE
+    DB-->>System: Return most-specific, recent dataset
+    
+    %% Report Creation
+    System->>DB: Create feasibility_reports
+    User->>System: Select bundles for estimate
+    System->>DB: Expand bundles to line items
+    System->>DB: Calculate unit_cost via LATERAL query
+    System->>DB: Insert feasibility_report_lines
+    
+    %% Report Finalization
+    User->>System: Review and adjust quantities
+    User->>System: Lock report
+    System->>DB: Set status='final'
+    System-->>User: Generate PDF report
+        </div>
+        <div class="description">
+            <strong>Estimate Generation Lifecycle:</strong> This sequence diagram shows the complete process from setup to final report:
+            <ol>
+                <li><strong>Initial Setup:</strong> Admin seeds national cost data, creates regional datasets, and authors bundles</li>
+                <li><strong>Property Setup:</strong> User submits property, system creates or finds property record and stores intake data</li>
+                <li><strong>Dataset Lookup:</strong> System uses recursive CTE to find most-specific, recent dataset for property location</li>
+                <li><strong>Report Creation:</strong> User selects bundles, system expands to line items with locked pricing</li>
+                <li><strong>Finalization:</strong> User reviews, adjusts quantities, locks report, and generates final PDF</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Store zoom instances
+        const zoomInstances = {};
+        
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false, 
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#2196F3',
+                primaryTextColor: '#000',
+                primaryBorderColor: '#1976D2',
+                lineColor: '#757575',
+                secondaryColor: '#FFC107',
+                tertiaryColor: '#4CAF50'
+            }
+        });
+
+        // Function to initialize zoom for a diagram
+        function initializeZoom(diagramId) {
+            const element = document.getElementById(diagramId);
+            const svg = element.querySelector('svg');
+            
+            if (svg && !zoomInstances[diagramId]) {
+                zoomInstances[diagramId] = svgPanZoom(svg, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: false,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    zoomScaleSensitivity: 0.2,
+                    dblClickZoomEnabled: true,
+                    mouseWheelZoomEnabled: true,
+                    preventMouseEventsDefault: true,
+                    contain: false,
+                    viewportSelector: '.svg-pan-zoom-viewport',
+                    beforeZoom: function(oldZoom, newZoom) {
+                        updateZoomInfo(diagramId, newZoom);
+                        return true;
+                    }
+                });
+                
+                // Force proper initial view
+                setTimeout(() => {
+                    if (zoomInstances[diagramId]) {
+                        zoomInstances[diagramId].resize();
+                        zoomInstances[diagramId].fit();
+                        zoomInstances[diagramId].center();
+                    }
+                }, 50);
+            }
+        }
+
+        // Update zoom level display
+        function updateZoomInfo(diagramId, zoomLevel) {
+            const container = document.getElementById(diagramId).closest('.diagram-container');
+            const zoomInfo = container.querySelector('.zoom-info');
+            if (zoomInfo) {
+                zoomInfo.textContent = `Use mouse wheel to zoom, drag to pan | Zoom: ${Math.round(zoomLevel * 100)}%`;
+            }
+        }
+
+        // Zoom control functions
+        function zoomIn(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].zoomIn();
+            }
+        }
+
+        function zoomOut(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].zoomOut();
+            }
+        }
+
+        function resetZoom(diagramId) {
+            if (zoomInstances[diagramId]) {
+                zoomInstances[diagramId].resetZoom();
+                zoomInstances[diagramId].center();
+                zoomInstances[diagramId].fit();
+            }
+        }
+
+        // Resize handler to maintain proper fit
+        function handleResize() {
+            Object.keys(zoomInstances).forEach(diagramId => {
+                if (zoomInstances[diagramId]) {
+                    setTimeout(() => {
+                        zoomInstances[diagramId].resize();
+                        zoomInstances[diagramId].fit();
+                        zoomInstances[diagramId].center();
+                    }, 100);
+                }
+            });
+        }
+
+        // Wait for DOM to load, then render diagrams
+        document.addEventListener('DOMContentLoaded', function() {
+            const diagrams = ['schema-erd', 'data-flow', 'domain-arch', 'stakeholder-flow', 'geo-pricing', 'estimate-lifecycle'];
+            let renderCount = 0;
+            
+            diagrams.forEach(diagramId => {
+                const element = document.getElementById(diagramId);
+                const diagramDefinition = element.textContent.trim();
+                
+                mermaid.render(`${diagramId}-svg`, diagramDefinition).then(function(result) {
+                    // Create a wrapper div for proper sizing
+                    const wrapper = document.createElement('div');
+                    wrapper.style.width = '100%';
+                    wrapper.style.height = '100%';
+                    wrapper.style.position = 'relative';
+                    wrapper.innerHTML = result.svg;
+                    
+                    element.innerHTML = '';
+                    element.appendChild(wrapper);
+                    
+                    // Ensure the SVG fills the container properly
+                    const svg = wrapper.querySelector('svg');
+                    if (svg) {
+                        // Get the original viewBox or create one
+                        let viewBox = svg.getAttribute('viewBox');
+                        if (!viewBox) {
+                            const bbox = svg.getBBox();
+                            viewBox = `0 0 ${bbox.width || 1000} ${bbox.height || 800}`;
+                            svg.setAttribute('viewBox', viewBox);
+                        }
+                        
+                        // Set SVG to fill container
+                        svg.setAttribute('width', '100%');
+                        svg.setAttribute('height', '100%');
+                        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                        svg.style.width = '100%';
+                        svg.style.height = '100%';
+                        svg.style.position = 'absolute';
+                        svg.style.top = '0';
+                        svg.style.left = '0';
+                    }
+                    
+                    // Initialize zoom after a short delay to ensure SVG is fully rendered
+                    setTimeout(() => {
+                        initializeZoom(diagramId);
+                        renderCount++;
+                        
+                        // Update zoom info for all diagrams once all are rendered
+                        if (renderCount === diagrams.length) {
+                            diagrams.forEach(id => updateZoomInfo(id, 1));
+                        }
+                    }, 300);
+                }).catch(function(error) {
+                    console.error(`Error rendering diagram ${diagramId}:`, error);
+                    element.innerHTML = `<p style="color: red;">Error rendering diagram: ${error.message}</p>`;
+                });
+            });
+            
+            // Add resize event listener
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>
