@@ -153,8 +153,8 @@
             <a href="index.html" class="nav-link">🏠 Main Landing Page</a>
             <a href="database-schema-diagram-option-a.html" class="nav-link">📊 Schema Option A</a>
             <a href="database-schema-diagram-option-b.html" class="nav-link">🔒 Schema Option B</a>
-            <a href="database-schema-diagram-option-c.html" class="nav-link current">🏆 Schema Option C</a>
-            <a href="database-schema-diagram-option-c-merged.html" class="nav-link">🚀 Schema Option C (Merged)</a>
+            <a href="database-schema-diagram-option-c.html" class="nav-link">🏆 Schema Option C</a>
+            <a href="database-schema-diagram-option-c-merged.html" class="nav-link current">🚀 Schema Option C (Merged)</a>
         </div>
     </div>
     
@@ -190,138 +190,336 @@
     </div>
     
     <div class="diagram-container">
-        <h2>Complete Schema Domain Architecture</h2>
+        <h2>Complete Schema Entity Relationship Diagram</h2>
         <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomIn('domain-arch')">+</button>
-            <button class="zoom-btn" onclick="zoomOut('domain-arch')">-</button>
-            <button class="zoom-btn" onclick="resetZoom('domain-arch')">Reset</button>
+            <button class="zoom-btn" onclick="zoomIn('schema-erd')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('schema-erd')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('schema-erd')">Reset</button>
         </div>
         <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
-        <div class="mermaid" id="domain-arch">
-flowchart TB
-    subgraph "Organization & User Domain"
-        ORG[organizations<br/>Multi-tenant support]
-        OM[organization_members<br/>Role-based access]
-        USR[users<br/>Individual + org support]
-        SS[submission_sharing<br/>Selective sharing]
-    end
+        <div class="mermaid" id="schema-erd">
+erDiagram
+    %% Organization & User Management
+    users ||--o{ organization_members : "belongs to"
+    organizations ||--o{ organization_members : "has members"
+    users ||--o{ property_submissions : "creates"
+    organizations ||--o{ submission_sharing : "can access"
+    property_submissions ||--o{ submission_sharing : "can be shared"
     
-    subgraph "Geographic & Pricing Domain"
-        GR[geo_regions<br/>Hierarchical LTREE]
-        CD[cost_datasets<br/>Immutable snapshots]
-        RM[regional_multipliers<br/>Market adjustments]
-    end
+    %% Geographic & Pricing
+    geo_regions ||--o{ geo_regions : "parent_id"
+    geo_regions ||--o{ cost_datasets : "geo_region_id"
+    geo_regions ||--o{ properties : "geo_region_id"
+    cost_datasets ||--o{ cost_prices : "dataset_id"
+    cost_datasets ||--o{ regional_multipliers : "dataset_id"
     
-    subgraph "Cost Catalog Domain"
-        CC[cost_categories<br/>Hierarchical structure]
-        CSC[cost_subcategories<br/>Granular organization]
-        CI[cost_items<br/>Immutable once referenced]
-        CIS[cost_item_standards<br/>SF, time, crew standards]
-        CIA[cost_item_attributes<br/>Extensible JSONB traits]
-        CP[cost_prices<br/>Locked pricing by tier]
-        BT[budget_tiers<br/>5-tier system]
-    end
+    %% Property Management
+    properties ||--o{ property_submissions : "has submissions"
+    property_submissions ||--|| submission_details : "has details"
+    property_submissions ||--|| submission_exterior_details : "has exterior"
+    property_submissions ||--o{ submission_exterior_materials : "has materials"
+    property_submissions ||--o{ submission_unit_access : "has access types"
+    property_submissions ||--o{ submission_elevators : "has elevators"
+    property_submissions ||--|| submission_units : "has unit summary"
+    submission_units ||--o{ submission_unit_configs : "has configurations"
+    property_submissions ||--o{ submission_amenities : "has amenities"
     
-    subgraph "Bundle & Amenity Domain"
-        CB[cost_bundles<br/>Versioned assemblies]
-        CBI[cost_bundle_items<br/>Dynamic formulas]
-        AM[amenity_master<br/>Complete catalog]
-        AC[amenity_conditions<br/>Cost variations]
-        ACI[amenity_cost_items<br/>Condition linking]
-    end
+    %% Master Cost Data
+    cost_categories ||--o{ cost_categories : "parent_id"
+    cost_categories ||--o{ cost_subcategories : "contains"
+    cost_subcategories ||--o{ cost_items : "contains"
+    cost_items ||--|| cost_item_standards : "has standards"
+    cost_items ||--o{ cost_item_attributes : "has attributes"
+    cost_items ||--o{ cost_prices : "has prices"
+    budget_tiers ||--o{ cost_prices : "defines"
     
-    subgraph "Property Management Domain"
-        PROP[properties<br/>Global entities]
-        PS[property_submissions<br/>Multi-stakeholder]
-        SD[submission_details<br/>Comprehensive data]
-        SED[submission_exterior_details<br/>Exterior specifics]
-        SEM[submission_exterior_materials<br/>Material tracking]
-        SUA[submission_unit_access<br/>Access types]
-        SE[submission_elevators<br/>Elevator details]
-        SU[submission_units<br/>Unit summaries]
-        SUC[submission_unit_configs<br/>Unit configurations]
-        SA[submission_amenities<br/>Selected amenities]
-    end
+    %% Bundle & Amenity System
+    cost_bundles ||--o{ cost_bundle_items : "contains"
+    cost_items ||--o{ cost_bundle_items : "included in"
+    amenity_master ||--o{ amenity_conditions : "has conditions"
+    amenity_master ||--o{ submission_amenities : "referenced by"
+    amenity_conditions ||--o{ submission_amenities : "referenced by"
+    amenity_master ||--o{ amenity_cost_items : "has cost items"
+    amenity_conditions ||--o{ amenity_cost_items : "uses"
+    cost_items ||--o{ amenity_cost_items : "linked to"
     
-    subgraph "Report Generation Domain"
-        REP[reports<br/>Immutable snapshots]
-        RT[report_types<br/>Configurable types]
-        RS[report_sections<br/>Modular components]
-        RLI[report_line_items<br/>Locked calculations]
-        RST[report_section_totals<br/>Pre-calculated]
-        RSUM[report_summary<br/>Top-level metrics]
-        RAB[report_area_breakdown<br/>Cost distribution]
-        RA[report_adjustments<br/>Manual overrides]
-    end
+    %% Report Generation
+    property_submissions ||--o{ reports : "generates"
+    report_types ||--o{ reports : "defines"
+    reports ||--o{ report_sections : "contains"
+    report_sections ||--o{ report_line_items : "has items"
+    reports ||--|| report_summary : "has summary"
+    reports ||--o{ report_section_totals : "has totals"
+    reports ||--o{ report_area_breakdown : "has breakdown"
+    reports ||--o{ report_adjustments : "can have"
+    reports ||--o{ report_documents : "produces"
+    cost_items ||--o{ report_line_items : "referenced in"
+    cost_bundles ||--o{ report_line_items : "referenced in"
     
-    subgraph "Calculation & Analysis Domain"
-        CT[calculation_templates<br/>Reusable formulas]
-        VAS[value_add_strategies<br/>ROI strategies]
-        CCR[cost_calculation_rules<br/>Business logic]
-        PT[project_timelines<br/>Scheduling templates]
-        MT[material_types<br/>Material specs]
-        WTS[work_type_standards<br/>Work standards]
-    end
+    %% File Management & Analytics
+    property_submissions ||--o{ submission_attachments : "has files"
+    reports ||--o{ report_analytics : "tracked by"
+    reports ||--o{ calculation_performance : "monitored by"
+    cost_datasets ||--o{ cost_data_imports : "created by"
     
-    subgraph "File & Document Domain"
-        RD[report_documents<br/>Generated files]
-        SAT[submission_attachments<br/>User uploads]
-    end
+    %% Core Tables with Key Fields
+    users {
+        uuid id PK
+        text clerk_id UK
+        text email
+        text first_name
+        text last_name
+        text phone
+        text company
+        uuid preferred_organization_id FK
+        json settings
+        timestamp last_active_at
+    }
     
-    subgraph "Analytics & Performance Domain"
-        RANALYTICS[report_analytics<br/>Usage tracking]
-        CPERF[calculation_performance<br/>Performance monitoring]
-        CDI[cost_data_imports<br/>Import auditing]
-    end
+    organizations {
+        uuid id PK
+        text name
+        text display_name
+        json settings
+        text subscription_tier
+        boolean is_active
+    }
     
-    %% Cross-domain relationships
-    USR --> PS
-    ORG --> PS
-    GR --> PROP
-    GR --> CD
-    CD --> CP
-    PROP --> PS
-    PS --> REP
-    CI --> RLI
-    CP --> RLI
-    CT --> RLI
-    REP --> RD
-    REP --> RANALYTICS
+    geo_regions {
+        uuid id PK
+        enum region_type
+        text code
+        text name
+        uuid parent_id FK
+        int depth
+        ltree path
+    }
     
-    %% Styling
-    classDef userDomain fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef geoDomain fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef costDomain fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef bundleDomain fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef propertyDomain fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    classDef reportDomain fill:#f1f8e9,stroke:#689f38,stroke-width:2px
-    classDef calcDomain fill:#fff8e1,stroke:#fbc02d,stroke-width:2px
-    classDef fileDomain fill:#f9fbe7,stroke:#827717,stroke-width:2px
-    classDef analyticsDomain fill:#fafafa,stroke:#424242,stroke-width:2px
+    cost_datasets {
+        uuid id PK
+        uuid geo_region_id FK
+        text label
+        date effective_date
+        date expiry_date
+        char currency
+        int version
+        boolean is_active
+        timestamp locked_at
+    }
     
-    class ORG,OM,USR,SS userDomain
-    class GR,CD,RM geoDomain
-    class CC,CSC,CI,CIS,CIA,CP,BT costDomain
-    class CB,CBI,AM,AC,ACI bundleDomain
-    class PROP,PS,SD,SED,SEM,SUA,SE,SU,SUC,SA propertyDomain
-    class REP,RT,RS,RLI,RST,RSUM,RAB,RA reportDomain
-    class CT,VAS,CCR,PT,MT,WTS calcDomain
-    class RD,SAT fileDomain
-    class RANALYTICS,CPERF,CDI analyticsDomain
+    properties {
+        uuid id PK
+        text address_line1
+        text address_line2
+        text city
+        text state
+        text zip
+        text normalized_address UK
+        decimal lat
+        decimal lon
+        uuid geo_region_id FK
+        enum property_type
+    }
+    
+    property_submissions {
+        uuid id PK
+        uuid property_id FK
+        uuid submitted_by_user_id FK
+        enum owner_type
+        uuid owner_id
+        text submission_number
+        int version
+        enum status
+        text buyer_scenario_id
+        uuid locked_dataset_id FK
+        timestamp submitted_at
+    }
+    
+    cost_items {
+        uuid id PK
+        uuid subcategory_id FK
+        text code UK
+        text name
+        text unit_of_measure
+        enum item_type
+        int version
+        boolean is_active
+    }
+    
+    cost_prices {
+        uuid item_id FK
+        uuid dataset_id FK
+        enum budget_tier
+        enum cost_type
+        decimal unit_cost
+        timestamp locked_at
+        uuid locked_by FK
+    }
+    
+    reports {
+        uuid id PK
+        uuid submission_id FK
+        uuid report_type_id FK
+        text report_number
+        int version
+        uuid dataset_snapshot_id FK
+        uuid buyer_user_id FK
+        enum status
+        timestamp locked_at
+        uuid locked_by FK
+        boolean is_final
+    }
+    
+    report_line_items {
+        uuid id PK
+        uuid section_id FK
+        uuid cost_item_id FK
+        uuid source_bundle_id FK
+        text description
+        decimal quantity
+        text unit_of_measure
+        decimal unit_price
+        enum budget_level
+        decimal ffe_amount
+        decimal labor_amount
+        decimal material_amount
+        decimal subtotal
+        json calculation_metadata
+    }
         </div>
         <div class="description">
-            <strong>Complete Domain Architecture:</strong> Option C organizes 40+ tables across 9 business domains, combining the best of both Option A and Option B:
+            <strong>Complete Schema ERD:</strong> This comprehensive entity relationship diagram shows all 40+ tables and their relationships in the AMP Report Option C system. 
+            Key architectural features include:
             <ul>
-                <li><strong>Organization & User:</strong> Complete multi-tenant architecture with role-based access control</li>
-                <li><strong>Geographic & Pricing:</strong> Hierarchical regions with immutable cost datasets and regional multipliers</li>
-                <li><strong>Cost Catalog:</strong> Three-tier hierarchy with comprehensive standards and extensible attributes</li>
-                <li><strong>Bundle & Amenity:</strong> Advanced assembly system with dynamic formulas and condition-based pricing</li>
-                <li><strong>Property Management:</strong> All detailed submission tables from Option A with enhanced flexibility</li>
-                <li><strong>Report Generation:</strong> Immutable reports with multiple types and complete audit trails</li>
-                <li><strong>Calculation & Analysis:</strong> Reusable templates and business rules for complex calculations</li>
-                <li><strong>File & Document:</strong> Comprehensive document management with versioning</li>
-                <li><strong>Analytics & Performance:</strong> Advanced monitoring and usage tracking capabilities</li>
+                <li><strong>Hybrid Multi-Tenant Architecture:</strong> Users can work independently or as part of multiple organizations with role-based permissions plus multi-stakeholder support</li>
+                <li><strong>Geographic Intelligence:</strong> Hierarchical geo_regions with LTREE paths for efficient cost dataset resolution</li>
+                <li><strong>Immutable Cost Engine:</strong> Cost datasets and reports become immutable once locked, ensuring audit trail integrity</li>
+                <li><strong>Comprehensive Property Management:</strong> All detailed submission tables from Option A with enhanced JSONB flexibility</li>
+                <li><strong>Advanced Bundle System:</strong> Cost bundles with dynamic formulas and condition-based amenity pricing</li>
+                <li><strong>Flexible Report Generation:</strong> Multiple report types with immutable snapshots and complete calculation metadata</li>
+                <li><strong>Performance Optimization:</strong> Pre-calculated totals, strategic denormalization, and comprehensive analytics</li>
             </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Data Aggregation Flow for UI View</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('data-flow')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('data-flow')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('data-flow')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="data-flow">
+flowchart TB
+    subgraph "User Selection"
+        U[User/Organization] --> PS[Select Property Submission]
+        PS --> BS[Select Buyer Scenario]
+    end
+    
+    subgraph "Geographic Resolution"
+        BS --> GR[Geographic Region Lookup]
+        GR --> CD[Locked Cost Dataset]
+        CD --> RM[Regional Multipliers]
+    end
+    
+    subgraph "Core Submission Data"
+        PS --> PD[Property Details]
+        PS --> SD[Submission Details]
+        PS --> SED[Exterior Details]
+        PS --> SU[Unit Summary]
+        PS --> SA[Amenities Selected]
+    end
+    
+    subgraph "Master Cost Data Lookup"
+        SA --> AM[Amenity Master]
+        AM --> AC[Amenity Conditions]
+        AM --> ACI[Amenity Cost Items]
+        
+        SED --> CI[Cost Items]
+        SD --> CI
+        SU --> CI
+        
+        CI --> CIS[Cost Item Standards]
+        CD --> CP[Cost Prices by Budget Tier]
+        CI --> CB[Cost Bundles]
+    end
+    
+    subgraph "Report Generation Engine"
+        SD --> VAS[Value Add Strategy]
+        VAS --> RGE{Report Generation<br/>Engine}
+        
+        PD --> RGE
+        SED --> RGE
+        SA --> RGE
+        SU --> RGE
+        CI --> RGE
+        CIS --> RGE
+        CP --> RGE
+        CB --> RGE
+        RM --> RGE
+        
+        RGE --> BT[Apply Budget Tier]
+        RGE --> CT[Apply Calculation Templates]
+        RGE --> CCR[Apply Business Rules]
+    end
+    
+    subgraph "Report Structure"
+        RGE --> R[Immutable Report Record]
+        R --> RS1[Amenities Section]
+        R --> RS2[Units Section]
+        R --> RS3[Exterior Section]
+        R --> RS4[General Property Section]
+        
+        RS1 --> RLI1[Line Items with Locked Costs]
+        RS2 --> RLI2[Line Items with Locked Costs]
+        RS3 --> RLI3[Line Items with Locked Costs]
+        RS4 --> RLI4[Line Items with Locked Costs]
+        
+        RLI1 --> RST[Pre-calculated Section Totals]
+        RLI2 --> RST
+        RLI3 --> RST
+        RLI4 --> RST
+        
+        RST --> RAB[Area Breakdown]
+        RAB --> RSM[Report Summary with ROI]
+    end
+    
+    subgraph "UI Presentation"
+        RSM --> PDF[PDF Report View]
+        RAB --> CHART[Cost Breakdown Charts]
+        RS1 --> TABLE1[Detailed Tables]
+        RS2 --> TABLE2[Detailed Tables]
+        RS3 --> TABLE3[Detailed Tables]
+        RS4 --> TABLE4[Detailed Tables]
+        
+        PDF --> UI[Unified UI View]
+        CHART --> UI
+        TABLE1 --> UI
+        TABLE2 --> UI
+        TABLE3 --> UI
+        TABLE4 --> UI
+    end
+    
+    style U fill:#e1f5fe
+    style PS fill:#e1f5fe
+    style BS fill:#e8f5e8
+    style RGE fill:#fff3e0
+    style R fill:#c8e6c9
+    style UI fill:#fce4ec
+    style RSM fill:#ffecb3
+        </div>
+        <div class="description">
+            <strong>Data Aggregation Flow:</strong> This diagram shows how data flows from user selection through to the final UI presentation in Option C:
+            <ol>
+                <li><strong>User Selection:</strong> User (solo or via organization) selects a property submission and buyer scenario</li>
+                <li><strong>Geographic Resolution:</strong> System resolves geographic region and locks to specific cost dataset</li>
+                <li><strong>Core Data Retrieval:</strong> All submission-related data is fetched including detailed property characteristics</li>
+                <li><strong>Cost Lookup:</strong> Master cost data retrieved from locked dataset with regional multipliers applied</li>
+                <li><strong>Report Generation:</strong> Engine applies business rules, calculation templates, and bundle formulas</li>
+                <li><strong>Report Structure:</strong> Data organized into immutable sections with pre-calculated totals</li>
+                <li><strong>UI Presentation:</strong> Multiple views generated for comprehensive analysis with buyer scenario isolation</li>
+            </ol>
         </div>
     </div>
 
@@ -393,6 +591,84 @@ flowchart TD
                 <li><strong>Shared Foundation:</strong> Property details and amenities shared, but cost calculations isolated</li>
                 <li><strong>Comparable Analysis:</strong> Teams can compare different buyer perspectives on the same deal</li>
                 <li><strong>Organization Sharing:</strong> Flexible sharing with access level controls and expiration</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Advanced Cost Calculation Engine</h2>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn('cost-engine')">+</button>
+            <button class="zoom-btn" onclick="zoomOut('cost-engine')">-</button>
+            <button class="zoom-btn" onclick="resetZoom('cost-engine')">Reset</button>
+        </div>
+        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
+        <div class="mermaid" id="cost-engine">
+flowchart LR
+    %% Input Sources
+    subgraph "Input Data Sources"
+        A[Property Submission<br/>📍 Geographic location<br/>🏠 Property characteristics]
+        B[Amenity Selections<br/>🏊 Pool: New Build<br/>🎾 Tennis Court: Renovate]
+        C[Unit Configurations<br/>🏢 50 units: 2BR/2BA<br/>🔧 Full renovation needed]
+        D[Exterior Details<br/>🏗️ Stucco facade<br/>🎨 Repaint needed]
+    end
+    
+    %% Geographic Resolution
+    A --> E[Geographic Engine<br/>🌍 geo_regions hierarchy<br/>📊 Find specific dataset]
+    E --> F[Locked Dataset<br/>🔒 Immutable pricing<br/>📅 Point-in-time snapshot]
+    
+    %% Cost Standards Application
+    B --> G[Amenity Cost Engine<br/>📋 amenity_master lookup<br/>⚙️ Condition-based pricing]
+    C --> H[Unit Cost Engine<br/>🏠 Unit type standards<br/>📏 SF-based calculations]
+    D --> I[Exterior Cost Engine<br/>🎨 Material-based pricing<br/>📐 Area calculations]
+    
+    %% Bundle Processing
+    G --> J[Bundle Expansion<br/>📦 cost_bundles<br/>🧮 Dynamic formulas]
+    H --> J
+    I --> J
+    
+    %% Standards & Multipliers
+    F --> K[Apply Standards<br/>📊 cost_item_standards<br/>⏱️ Time, SF, crew data]
+    J --> K
+    K --> L[Regional Multipliers<br/>🌎 Labor adjustments<br/>💰 Material variations]
+    
+    %% Budget Tier Selection
+    L --> M[Budget Tier Engine<br/>💎 HIGH: Premium brands<br/>💰 MEDIUM: Standard quality<br/>🔧 LOW: Value engineering]
+    
+    %% Final Calculations
+    M --> N[Line Item Generation<br/>📝 Detailed calculations<br/>🔍 Complete metadata]
+    N --> O[Section Totals<br/>📊 Pre-calculated sums<br/>⚡ Performance optimized]
+    O --> P[Project Summary<br/>💰 Total project cost<br/>📈 ROI metrics<br/>📅 Timeline estimates]
+    
+    %% Immutable Output
+    P --> Q[Lock Report<br/>🔒 Immutable snapshot<br/>📋 Audit trail complete]
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef geo fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef engine fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef processing fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef calculation fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef output fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    
+    class A,B,C,D input
+    class E,F geo
+    class G,H,I,J engine
+    class K,L,M processing
+    class N,O,P calculation
+    class Q output
+        </div>
+        <div class="description">
+            <strong>Advanced Cost Calculation Engine:</strong> Option C provides the most sophisticated cost calculation system:
+            <ul>
+                <li><strong>Multi-Source Input:</strong> Property, amenity, unit, and exterior data all contribute to calculations</li>
+                <li><strong>Geographic Intelligence:</strong> Automatic dataset resolution based on property location</li>
+                <li><strong>Condition-Based Pricing:</strong> Amenities priced differently based on their current condition</li>
+                <li><strong>Bundle System:</strong> Complex assemblies with dynamic quantity formulas</li>
+                <li><strong>Standards Application:</strong> SF, time, and crew standards ensure accurate estimates</li>
+                <li><strong>Regional Adjustments:</strong> Labor and material multipliers for local market conditions</li>
+                <li><strong>Budget Tier Flexibility:</strong> Five budget levels from value engineering to luxury</li>
+                <li><strong>Performance Optimization:</strong> Pre-calculated totals for sub-3-second report generation</li>
             </ul>
         </div>
     </div>
@@ -475,84 +751,6 @@ flowchart TD
                 <li><strong>Regulatory Compliance:</strong> Audit trails meet financial and regulatory requirements</li>
                 <li><strong>Change Management:</strong> New versions created for changes, old data preserved</li>
                 <li><strong>Market Responsiveness:</strong> Regional multipliers enable quick adjustments without dataset recreation</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="diagram-container">
-        <h2>Advanced Cost Calculation Engine</h2>
-        <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomIn('cost-engine')">+</button>
-            <button class="zoom-btn" onclick="zoomOut('cost-engine')">-</button>
-            <button class="zoom-btn" onclick="resetZoom('cost-engine')">Reset</button>
-        </div>
-        <div class="zoom-info">Use mouse wheel to zoom, drag to pan</div>
-        <div class="mermaid" id="cost-engine">
-flowchart LR
-    %% Input Sources
-    subgraph "Input Data Sources"
-        A[Property Submission<br/>📍 Geographic location<br/>🏠 Property characteristics]
-        B[Amenity Selections<br/>🏊 Pool: New Build<br/>🎾 Tennis Court: Renovate]
-        C[Unit Configurations<br/>🏢 50 units: 2BR/2BA<br/>🔧 Full renovation needed]
-        D[Exterior Details<br/>🏗️ Stucco facade<br/>🎨 Repaint needed]
-    end
-    
-    %% Geographic Resolution
-    A --> E[Geographic Engine<br/>🌍 geo_regions hierarchy<br/>📊 Find specific dataset]
-    E --> F[Locked Dataset<br/>🔒 Immutable pricing<br/>📅 Point-in-time snapshot]
-    
-    %% Cost Standards Application
-    B --> G[Amenity Cost Engine<br/>📋 amenity_master lookup<br/>⚙️ Condition-based pricing]
-    C --> H[Unit Cost Engine<br/>🏠 Unit type standards<br/>📏 SF-based calculations]
-    D --> I[Exterior Cost Engine<br/>🎨 Material-based pricing<br/>📐 Area calculations]
-    
-    %% Bundle Processing
-    G --> J[Bundle Expansion<br/>📦 cost_bundles<br/>🧮 Dynamic formulas]
-    H --> J
-    I --> J
-    
-    %% Standards & Multipliers
-    F --> K[Apply Standards<br/>📊 cost_item_standards<br/>⏱️ Time, SF, crew data]
-    J --> K
-    K --> L[Regional Multipliers<br/>🌎 Labor adjustments<br/>💰 Material variations]
-    
-    %% Budget Tier Selection
-    L --> M[Budget Tier Engine<br/>💎 HIGH: Premium brands<br/>💰 MEDIUM: Standard quality<br/>🔧 LOW: Value engineering]
-    
-    %% Final Calculations
-    M --> N[Line Item Generation<br/>📝 Detailed calculations<br/>🔍 Complete metadata]
-    N --> O[Section Totals<br/>📊 Pre-calculated sums<br/>⚡ Performance optimized]
-    O --> P[Project Summary<br/>💰 Total project cost<br/>📈 ROI metrics<br/>📅 Timeline estimates]
-    
-    %% Immutable Output
-    P --> Q[Lock Report<br/>🔒 Immutable snapshot<br/>📋 Audit trail complete]
-    
-    %% Styling
-    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef geo fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef engine fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef processing fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef calculation fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    classDef output fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    
-    class A,B,C,D input
-    class E,F geo
-    class G,H,I,J engine
-    class K,L,M processing
-    class N,O,P calculation
-    class Q output
-        </div>
-        <div class="description">
-            <strong>Advanced Cost Calculation Engine:</strong> Option C provides the most sophisticated cost calculation system:
-            <ul>
-                <li><strong>Multi-Source Input:</strong> Property, amenity, unit, and exterior data all contribute to calculations</li>
-                <li><strong>Geographic Intelligence:</strong> Automatic dataset resolution based on property location</li>
-                <li><strong>Condition-Based Pricing:</strong> Amenities priced differently based on their current condition</li>
-                <li><strong>Bundle System:</strong> Complex assemblies with dynamic quantity formulas</li>
-                <li><strong>Standards Application:</strong> SF, time, and crew standards ensure accurate estimates</li>
-                <li><strong>Regional Adjustments:</strong> Labor and material multipliers for local market conditions</li>
-                <li><strong>Budget Tier Flexibility:</strong> Five budget levels from value engineering to luxury</li>
-                <li><strong>Performance Optimization:</strong> Pre-calculated totals for sub-3-second report generation</li>
             </ul>
         </div>
     </div>
@@ -656,7 +854,7 @@ flowchart LR
 
         // Wait for DOM to load, then render diagrams
         document.addEventListener('DOMContentLoaded', function() {
-            const diagrams = ['domain-arch', 'multi-stakeholder', 'immutability', 'cost-engine'];
+            const diagrams = ['schema-erd', 'data-flow', 'multi-stakeholder', 'cost-engine', 'immutability'];
             let renderCount = 0;
             
             diagrams.forEach(diagramId => {
